@@ -1,14 +1,14 @@
 require 'google/apis/sheets_v4'
-require 'googleauth'
+# require 'googleauth'
+require 'dotenv/load'
 
 class GoogleSheet
   def self.get_sheet_array_from_google_sheet(options = {})
-    p @sheet_id
     service = Google::Apis::SheetsV4::SheetsService.new
     service.authorization = get_google_auth
     data = service.get_spreadsheet_values(
-      "sheet_id",
-      "Sheet!A2:E20000"
+      ENV["GOOGLE_SHEET_ID"],
+      "Daily!A2:E20000"
     ).values
     p data
   end
@@ -23,11 +23,20 @@ class GoogleSheet
     values_range = Google::Apis::SheetsV4::ValueRange.new(values: values)
 
     response= service.append_spreadsheet_value(
-      "sheet_id", "Sheet!A:E",
+      ENV["GOOGLE_SHEET_ID"], "Sheet!A:E",
       {"values": [values]},
       value_input_option: "RAW"
     )
 
+    puts response.to_json
+  end
+
+
+  def self.clear_data_from_spreadsheet
+    service = Google::Apis::SheetsV4::SheetsService.new
+    service.authorization = get_google_auth
+
+    response = service.clear_values(ENV["GOOGLE_SHEET_ID"], "Daily!A12:E12")
     puts response.to_json
   end
 
@@ -42,4 +51,6 @@ end
 
 # GoogleSheet.get_sheet_array_from_google_sheet
 
-GoogleSheet.append_data_to_spreadsheet
+# GoogleSheet.append_data_to_spreadsheet
+
+GoogleSheet.clear_data_from_spreadsheet
