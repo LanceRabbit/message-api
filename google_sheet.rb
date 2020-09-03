@@ -13,6 +13,24 @@ class GoogleSheet
     p data
   end
 
+  def self.append_data_to_spreadsheet
+    service = Google::Apis::SheetsV4::SheetsService.new
+    service.authorization = get_google_auth
+
+    #Add rows to spreadsheet
+    range_name = ["A1:E1"]
+    values = ["", "13:41", "210", "🥦"]
+    values_range = Google::Apis::SheetsV4::ValueRange.new(values: values)
+
+    response= service.append_spreadsheet_value(
+      "sheet_id", "Sheet!A:E",
+      {"values": [values]},
+      value_input_option: "RAW"
+    )
+
+    puts response.to_json
+  end
+
   private
 
   def self.get_google_auth
@@ -22,4 +40,6 @@ class GoogleSheet
   end
 end
 
-GoogleSheet.get_sheet_array_from_google_sheet
+# GoogleSheet.get_sheet_array_from_google_sheet
+
+GoogleSheet.append_data_to_spreadsheet
