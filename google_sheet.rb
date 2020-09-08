@@ -17,12 +17,12 @@ class GoogleSheet
     service = get_service
 
     #Add rows to spreadsheet
-    values = values.map do |value|
-      value.to_i if value.to_i >= 24
+    values = values.each_with_index.map do |value, index|
+      value = value.to_i if [1,2].include?(index)
+      value
     end
     values.unshift(Date.today)
     # values = [Date.parse("2020-09-07"), "13:41", "210".to_i, "180".to_i, "", "🥦"]
-
     response = service.append_spreadsheet_value(
       ENV["GOOGLE_SHEET_ID"], "Daily!A:F",
       {"values": [values]},
@@ -48,6 +48,10 @@ class GoogleSheet
     ).values
 
     data.each do |content|
+      content = content.each_with_index.map do |value, index|
+        value = value.to_i if [1,2].include?(index)
+        value
+      end
       service.append_spreadsheet_value(
         ENV["GOOGLE_SHEET_ID"], "Detail!A:F",
         {"values": [content]},
@@ -57,6 +61,20 @@ class GoogleSheet
 
     service.clear_values(ENV["GOOGLE_SHEET_ID"], "Daily!A2:F")
 
+  end
+
+  def self.group_by_field(date)
+    service = get_service
+    data = service.get_spreadsheet_values(
+      ENV["GOOGLE_SHEET_ID"],
+      "Daily!A2:F20000"
+    ).values
+    total = data.select do |content|
+      content[0] == date
+    end.inject(0) do |sum, content|
+      sum += content[3].to_i
+    end
+    p total
   end
 
   private
@@ -81,3 +99,4 @@ end
 # GoogleSheet.clear_data_from_spreadsheet
 
 # GoogleSheet.move_data_to_other_sheet
+# GoogleSheet.group_by_field(Date.today.to_s)

@@ -28,7 +28,10 @@ def process(content)
     "最後一筆資料: \n#{data}"
   when "Delete"
     GoogleSheet.clear_data_from_spreadsheet
-    "Delete Data Successfully"
+    "刪除資料成功"
+  when "Total Milk"
+    total = GoogleSheet.group_by_field(Date.today.to_s)
+    "今天喝了 #{total} ml 的配方奶"
   else
     # Save data
     if date_pattern.match(content.split(' ')[0])
@@ -41,8 +44,11 @@ def process(content)
 
 end
 
-get '/sheet' do
-  GoogleSheet.get_sheet_array_from_google_sheet
+get '/daily_job' do
+  p request
+  data = GoogleSheet.get_sheet_array_from_google_sheet.last
+  # GoogleSheet.move_data_to_other_sheet
+  p data
   "OK"
 end
 
@@ -54,7 +60,7 @@ post '/callback' do
   end
 
   events = client.parse_events_from(body)
-  p events
+  # p events
   events.each do |event|
     case event
     when Line::Bot::Event::Message
