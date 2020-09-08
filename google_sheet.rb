@@ -4,43 +4,68 @@ require 'dotenv/load'
 
 class GoogleSheet
   def self.get_sheet_array_from_google_sheet(options = {})
-    service = Google::Apis::SheetsV4::SheetsService.new
-    service.authorization = get_google_auth
+    service = get_service
+
     data = service.get_spreadsheet_values(
       ENV["GOOGLE_SHEET_ID"],
-      "Daily!A2:E20000"
+      "Daily!A2:F20000"
     ).values
-    p data
+    # p data.last
   end
 
-  def self.append_data_to_spreadsheet
-    service = Google::Apis::SheetsV4::SheetsService.new
-    service.authorization = get_google_auth
+  def self.append_data_to_spreadsheet(values)
+    service = get_service
 
     #Add rows to spreadsheet
-    range_name = ["A1:E1"]
-    values = ["", "13:41", "210", "🥦"]
-    values_range = Google::Apis::SheetsV4::ValueRange.new(values: values)
+    values = values.map do |value|
+      value.to_i if value.to_i >= 24
+    end
+    values.unshift(Date.today)
+    # values = [Date.parse("2020-09-07"), "13:41", "210".to_i, "180".to_i, "", "🥦"]
 
-    response= service.append_spreadsheet_value(
-      ENV["GOOGLE_SHEET_ID"], "Sheet!A:E",
+    response = service.append_spreadsheet_value(
+      ENV["GOOGLE_SHEET_ID"], "Daily!A:F",
       {"values": [values]},
       value_input_option: "RAW"
     )
-
-    puts response.to_json
+    # puts response.to_json
   end
 
 
   def self.clear_data_from_spreadsheet
-    service = Google::Apis::SheetsV4::SheetsService.new
-    service.authorization = get_google_auth
+    service = get_service
+    index = get_sheet_array_from_google_sheet.size + 1
+    response = service.clear_values(ENV["GOOGLE_SHEET_ID"], "Daily!A#{index}:F#{index}")
+    # puts response.to_json
+  end
 
-    response = service.clear_values(ENV["GOOGLE_SHEET_ID"], "Daily!A12:E12")
-    puts response.to_json
+  def self.move_data_to_other_sheet
+    service = get_service
+
+    data = service.get_spreadsheet_values(
+      ENV["GOOGLE_SHEET_ID"],
+      "Daily!A2:F"
+    ).values
+
+    data.each do |content|
+      service.append_spreadsheet_value(
+        ENV["GOOGLE_SHEET_ID"], "Detail!A:F",
+        {"values": [content]},
+        value_input_option: "RAW"
+      )
+    end
+
+    service.clear_values(ENV["GOOGLE_SHEET_ID"], "Daily!A2:F")
+
   end
 
   private
+
+  def self.get_service
+    service = Google::Apis::SheetsV4::SheetsService.new
+    service.authorization = get_google_auth
+    service
+  end
 
   def self.get_google_auth
     scope = [Google::Apis::SheetsV4::AUTH_SPREADSHEETS]
@@ -53,4 +78,6 @@ end
 
 # GoogleSheet.append_data_to_spreadsheet
 
-GoogleSheet.clear_data_from_spreadsheet
+# GoogleSheet.clear_data_from_spreadsheet
+
+# GoogleSheet.move_data_to_other_sheet
