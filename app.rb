@@ -4,6 +4,10 @@ require 'line/bot'
 require 'dotenv/load'
 require './google_sheet'
 
+set :bind, "0.0.0.0"
+port = ENV["PORT"] || "8080"
+set :port, port
+
 def date_pattern
   /[0-2]{1}[0-9]{1}\:[0-5]{1}[0-9]{1}/
 end
