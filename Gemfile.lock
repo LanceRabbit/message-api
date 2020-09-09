@@ -62,7 +62,6 @@ PLATFORMS
 DEPENDENCIES
   dotenv
   google-api-client
-  googleauth
   line-bot-api
   sinatra
 

@@ -5,4 +5,4 @@ gem 'sinatra'
 gem 'dotenv'
 
 gem 'google-api-client'
-gem 'googleauth'
+# gem 'googleauth'

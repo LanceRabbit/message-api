@@ -1,9 +1,8 @@
-# app.rb
+# frozen_string_literal: true
 require 'sinatra'
 require 'line/bot'
 require 'dotenv/load'
 require './google_sheet'
-
 
 def date_pattern
   /[0-2]{1}[0-9]{1}\:[0-5]{1}[0-9]{1}/
