@@ -17,8 +17,37 @@ def client
   }
 end
 
+def get_user_profile(userId)
+  response = client.get_profile(userId)
+  case response
+  when Net::HTTPSuccess then
+    contact = JSON.parse(response.body)
+    p contact
+    p contact['displayName']
+    p contact['pictureUrl']
+    p contact['statusMessage']
+  else
+    p "#{response.code} #{response.body}"
+  end
+end
+
 def process(content)
   case content
+  when "Example"
+    <<-WORD
+    ===說明===
+    時間
+    泡奶量
+    喝奶量
+    大便
+    副食品
+    ===範本===
+    13:41
+    210
+    180
+    -
+    🥦
+    WORD
   when "Show"
     data = GoogleSheet.get_sheet_array_from_google_sheet.last
     keys = [:Date, :Time, :Full, :Used, :Stool, :Food]
@@ -45,10 +74,10 @@ def process(content)
 end
 
 get '/daily_job' do
-  p request
-  data = GoogleSheet.get_sheet_array_from_google_sheet.last
-  # GoogleSheet.move_data_to_other_sheet
-  p data
+  # p request
+  # data = GoogleSheet.get_sheet_array_from_google_sheet.last
+  GoogleSheet.move_data_to_other_sheet
+  # p data
   "OK"
 end
 
@@ -60,7 +89,7 @@ post '/callback' do
   end
 
   events = client.parse_events_from(body)
-  # p events
+  p events
   events.each do |event|
     case event
     when Line::Bot::Event::Message
@@ -80,6 +109,10 @@ post '/callback' do
       #   tf = Tempfile.open("content")
       #   tf.write(response.body)
       end
+    when Line::Bot::Event::Follow
+      get_user_profile(event['source']['userId'])
+    when Line::Bot::Event::Unfollow
+      # TODO mark unfollow userId
     end
   end
 
