@@ -25,10 +25,11 @@ def get_user_profile(userId)
   case response
   when Net::HTTPSuccess then
     contact = JSON.parse(response.body)
-    p contact
-    p contact['displayName']
-    p contact['pictureUrl']
-    p contact['statusMessage']
+    # p contact
+    # p contact['displayName']
+    # p contact['pictureUrl']
+    # p contact['statusMessage']
+    [userId, contact['displayName']]
   else
     p "#{response.code} #{response.body}"
   end
@@ -62,7 +63,7 @@ def process(content)
     GoogleSheet.clear_data_from_spreadsheet
     "刪除資料成功"
   when "Total Milk"
-    total = GoogleSheet.group_by_field(Date.today.to_s)
+    total = GoogleSheet.group_by_field(Date.today.strftime("%Y/%m/%d"))
     "今天喝了 #{total} ml 的配方奶"
   else
     # Save data
@@ -92,7 +93,7 @@ post '/callback' do
   end
 
   events = client.parse_events_from(body)
-  p events
+  # p events
   events.each do |event|
     case event
     when Line::Bot::Event::Message
@@ -113,9 +114,11 @@ post '/callback' do
       #   tf.write(response.body)
       end
     when Line::Bot::Event::Follow
-      get_user_profile(event['source']['userId'])
+      data = get_user_profile(event['source']['userId'])
+      GoogleSheet.save_user_data(data, "Follow")
     when Line::Bot::Event::Unfollow
-      # TODO mark unfollow userId
+      data = [event['source']['userId']]
+      GoogleSheet.save_user_data(data, "Unfollow")
     end
   end
 

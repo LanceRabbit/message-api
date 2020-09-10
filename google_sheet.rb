@@ -7,7 +7,7 @@ class GoogleSheet
   def self.get_sheet_array_from_google_sheet(options = {})
     service = get_service
 
-    data = service.get_spreadsheet_values(
+    service.get_spreadsheet_values(
       ENV["GOOGLE_SHEET_ID"],
       "Daily!A2:F20000"
     ).values
@@ -22,16 +22,15 @@ class GoogleSheet
       value = value.to_i if [1,2].include?(index)
       value
     end
-    values.unshift(Date.today)
+    values.unshift(Date.today.strftime("%Y/%m/%d"))
     # values = [Date.parse("2020-09-07"), "13:41", "210".to_i, "180".to_i, "", "🥦"]
     response = service.append_spreadsheet_value(
       ENV["GOOGLE_SHEET_ID"], "Daily!A:F",
       {"values": [values]},
-      value_input_option: "RAW"
+      value_input_option: "USER_ENTERED"
     )
     # puts response.to_json
   end
-
 
   def self.clear_data_from_spreadsheet
     service = get_service
@@ -50,7 +49,7 @@ class GoogleSheet
 
     data.each do |content|
       content = content.each_with_index.map do |value, index|
-        value = value.to_i if [1,2].include?(index)
+        value = value.to_i if [2,3].include?(index)
         value
       end
       service.append_spreadsheet_value(
@@ -76,6 +75,44 @@ class GoogleSheet
       sum += content[3].to_i
     end
     p total
+  end
+
+  def self.save_user_data(values)
+    service = get_service
+    service.append_spreadsheet_value(
+      ENV["GOOGLE_SHEET_ID"], "Users!A:C",
+      {"values": [values]},
+      value_input_option: "USER_ENTERED"
+    )
+  end
+
+  def self.save_user_data(values, status)
+    service = get_service
+    data = get_user_data
+    index = data.map {|user| user[0]}.find_index(values[0])
+    if index
+      user = data[index]
+      user[2] = status
+      service.update_spreadsheet_value(
+        ENV["GOOGLE_SHEET_ID"], "Users!A#{index+1}:C#{index+1}",
+        {"values": [user]},
+        value_input_option: "USER_ENTERED"
+      )
+    else
+      values = values.push(status)
+      service.append_spreadsheet_value(
+        ENV["GOOGLE_SHEET_ID"], "Users!A:C",
+        {"values": [values]},
+        value_input_option: "USER_ENTERED"
+      )
+    end
+  end
+
+  def self.get_user_data
+    service = get_service
+    service.get_spreadsheet_values(
+      ENV["GOOGLE_SHEET_ID"], "Users!A:C",
+    ).values
   end
 
   private
