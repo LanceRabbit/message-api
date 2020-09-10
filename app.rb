@@ -4,6 +4,7 @@ require 'line/bot'
 require 'dotenv/load'
 require './google_sheet'
 
+set :environment, 'production'
 set :bind, "0.0.0.0"
 port = ENV["PORT"] || "8080"
 set :port, port

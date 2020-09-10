@@ -7,8 +7,7 @@ WORKDIR $APP_HOME
 
 COPY Gemfile Gemfile.lock ./
 
-
-RUN gem install bundler && bundle config set without 'test' &&bundle install
+RUN gem install --no-document bundler && bundle config set without 'development test' && bundle install
 
 COPY . ./
 
