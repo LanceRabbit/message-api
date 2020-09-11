@@ -54,12 +54,7 @@ def process(content)
     🥦
     WORD
   when "Show"
-    data = GoogleSheet.get_sheet_array_from_google_sheet.last
-    keys = [:Date, :Time, :Full, :Used, :Stool, :Food]
-    data = data.each_with_index.map  do |value, index|
-      "#{keys[index]}: #{value}"
-    end.join(",\n")
-    "最後一筆資料: \n#{data}"
+    GoogleSheet.get_last_data
   when "Delete"
     GoogleSheet.clear_data_from_spreadsheet
     "刪除資料成功"

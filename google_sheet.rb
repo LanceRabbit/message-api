@@ -63,18 +63,32 @@ class GoogleSheet
 
   end
 
+  def self.get_last_data
+    data = get_sheet_array_from_google_sheet
+
+    return "本日尚未新增資料！" if data.nil?
+
+    keys = [:Date, :Time, :Full, :Used, :Stool, :Food]
+    data = data.last.each_with_index.map  do |value, index|
+      "#{keys[index]}: #{value}"
+    end.join(",\n")
+    "最後一筆資料: \n#{data}"
+  end
+
   def self.group_by_field(date)
     service = get_service
     data = service.get_spreadsheet_values(
       ENV["GOOGLE_SHEET_ID"],
       "Daily!A2:F20000"
     ).values
+
+    return 0 if data.nil?
+
     total = data.select do |content|
       content[0] == date
     end.inject(0) do |sum, content|
       sum += content[3].to_i
     end
-    p total
   end
 
   def self.save_user_data(values)
