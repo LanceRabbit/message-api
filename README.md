@@ -12,7 +12,10 @@ set up below setting
 LINE_CHANNEL_ID=
 LINE_CHANNEL_SECRET=
 LINE_CHANNEL_TOKEN=
+GOOGLE_SHEET_ID=
 ```
+
+Get `google-api-key.json` from Google API
 
 ## install
 
@@ -23,5 +26,17 @@ bundle install
 ## run
 
 ```shell
-rackup -p 4567
+ruby app.rb
+```
+
+## build image
+
+```shell
+docker build -t line-msg . --no-cache
+```
+
+## run app via docker run
+
+```shell
+docker run --name webhook-api -p 8080:8080 line-msg
 ```
