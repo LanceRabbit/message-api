@@ -22,7 +22,8 @@ class GoogleSheet
       value = value.to_i if [1,2].include?(index)
       value
     end
-    values.unshift(Date.today.strftime("%Y/%m/%d"))
+    # dt = DateTime.now.new_offset('+08:00')
+    values.unshift(DateTime.now.new_offset('+08:00').strftime("%Y/%m/%d"))
     # values = [Date.parse("2020-09-07"), "13:41", "210".to_i, "180".to_i, "", "🥦"]
     response = service.append_spreadsheet_value(
       ENV["GOOGLE_SHEET_ID"], "Daily!A:F",
