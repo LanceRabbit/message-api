@@ -9,8 +9,8 @@ set :bind, "0.0.0.0"
 port = ENV["PORT"] || "8080"
 set :port, port
 
-def date_pattern
-  /[0-2]{1}[0-9]{1}\:[0-5]{1}[0-9]{1}/
+def time_pattern
+  /^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/
 end
 
 def client
@@ -63,7 +63,7 @@ def process(content)
     "今天喝了 #{total} ml 的配方奶"
   else
     # Save data
-    if date_pattern.match(content.split(' ')[0])
+    if time_pattern.match(content.split(' ')[0])
       GoogleSheet.append_data_to_spreadsheet(content.split(' '))
       "寫入資料成功: \n#{content}"
     else
