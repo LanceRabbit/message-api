@@ -2,7 +2,7 @@
 require 'sinatra'
 require 'line/bot'
 require 'dotenv/load'
-require './google_sheet'
+require './lib/google_sheet'
 
 set :environment, 'production'
 set :bind, "0.0.0.0"
