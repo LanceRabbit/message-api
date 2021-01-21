@@ -1,6 +1,6 @@
 # frozen_string_literal: true
-require './lib/google_sheet'
-require './lib/bot'
+require_relative './lib/google_sheet'
+require_relative './lib/bot'
 require 'sinatra'
 require 'dotenv/load'
 require 'line/bot'
