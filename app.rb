@@ -13,14 +13,6 @@ def time_pattern
   /^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/
 end
 
-# def client
-#   @client ||= Line::Bot::Client.new { |config|
-#     config.channel_id = ENV["LINE_CHANNEL_ID"]
-#     config.channel_secret = ENV["LINE_CHANNEL_SECRET"]
-#     config.channel_token = ENV["LINE_CHANNEL_TOKEN"]
-#   }
-# end
-
 def get_user_profile(userId)
   response = Bot.client.get_profile(userId)
   case response
