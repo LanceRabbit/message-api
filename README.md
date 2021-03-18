@@ -2,7 +2,7 @@
 
 ## required
 
-ruby: 2.6.6
+ruby: 2.7.2
 
 mv `.env.exmple` to `.env`
 

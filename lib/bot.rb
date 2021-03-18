@@ -2,9 +2,6 @@
 
 require 'singleton'
 require 'forwardable'
-# test this class
-# require 'line/bot'
-# require 'dotenv/load'
 
 class Bot
   class << self
@@ -21,7 +18,6 @@ class Bot
 
   def initialize
     @client = Line::Bot::Client.new { |config|
-      p 'Bot Init'
       config.channel_id = ENV["LINE_CHANNEL_ID"]
       config.channel_secret = ENV["LINE_CHANNEL_SECRET"]
       config.channel_token = ENV["LINE_CHANNEL_TOKEN"]
@@ -30,5 +26,4 @@ class Bot
 end
 
 # p Bot.singleton_methods
-# p Bot.client
 # p Bot.client
