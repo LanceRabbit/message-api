@@ -51,7 +51,7 @@ def process(content)
     GoogleSheet.clear_data_from_spreadsheet
     "刪除資料成功"
   when "Total Milk"
-    total = GoogleSheet.group_by_field(Date.today.strftime("%Y/%m/%d"))
+    total = GoogleSheet.group_by_field(DateTime.now.new_offset('+08:00').strftime("%Y/%m/%d"))
     "今天喝了 #{total} ml 的配方奶"
   else
     # Save data
